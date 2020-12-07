@@ -1,0 +1,97 @@
+
+type Query {
+
+    lofBlogById (
+            post_id: Int @doc(description: "Query by id.")
+    ) : Blog @resolver( class: "Lof\\BlogGraphQl\\Model\\Resolver\\Blog") @doc(description: "Query by Get blog by id.")
+
+    lofBlogList(
+            search: String @doc(description: "Performs a full-text search using the specified key words."),
+            filter: BlogFilterInput @doc(description: "Identifies which product attributes to search for and return."),
+            pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. This attribute is optional."),
+            currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
+           ):Blogs @resolver(class: "\\Lof\\BlogGraphQl\\Model\\Resolver\\Blogs") @doc(description: "The blogs product query searches for blogs that match the criteria specified in the search and filter attributes")
+}
+
+type Blog {
+    post_id  : Int  @doc(description: "Post id.")
+    title  : String  @doc(description: "title.")
+    identifier  : String  @doc(description: "identifier.")
+    content  : String  @doc(description: "content.")
+    short_content  : String  @doc(description: "short_content.")
+    user_id  : Int  @doc(description: "user_id.")
+    is_active : Int  @doc(description: "is_active.")
+    image  : String  @doc(description: "image.")
+    image_type  : String  @doc(description: "image_type.")
+    image_video_type  : String  @doc(description: "image_video_type.")
+    image_video_id  : String  @doc(description: "image_video_id.")
+    thumbnail  : String  @doc(description: "thumbnail.")
+    thumbnail_type  : String  @doc(description: "thumbnail_type.")
+    thumbnail_video_type  : String  @doc(description: "thumbnail_video_type.")
+    thumbnail_video_id  : String  @doc(description: "thumbnail_video_id.")
+    page_layout  : String  @doc(description: "page_layout.")
+    page_title  : String  @doc(description: "page_title.")
+    meta_keywords  : String  @doc(description: "meta_keywords.")
+    meta_description  : String  @doc(description: "meta_description.")
+    tags  : String  @doc(description: "tags.")
+    hits  : String  @doc(description: "hits.")
+    creation_time  : String  @doc(description: "creation_time.")
+    update_time  : String  @doc(description: "update_time.")
+    enable_comment  : Int  @doc(description: "enable_comment.")
+    is_private  : Int  @doc(description: "is_private.")
+    like  : Int  @doc(description: "like.")
+    disklike  : Int  @doc(description: "disklike.")
+    og_metadata  : String  @doc(description: "og_metadata.")
+    og_title  : String  @doc(description: "og_title.")
+    og_description  : String  @doc(description: "Og Description.")
+    og_img  : String  @doc(description: "Og Image.")
+    og_type  : String  @doc(description: "Og Type.")
+    real_post_url  : String  @doc(description: "Real Post Url.")
+    real_image_url  : String  @doc(description: "Real Image Url.")
+    real_thumbnail_url  : String  @doc(description: "Real Thumbnail Url.")
+    comments: [Comment] @doc(description: "Comment.")
+    store_ids: [Int] @doc(description: "Store Ids.")
+    category_id: [Int] @doc(description: "Category Ids.")
+    related_posts: [RelatedPosts] @doc(description: "Related Posts.")
+    related_products: [RelatedProducts] @doc(description: "Related Products.")
+}
+
+type RelatedProducts {
+    post_id: Int @doc(description: "Post Id")
+    entity_id: Int @doc(description: "Product Id")
+    position: Int @doc(description: "Position")
+}
+
+type Comment {
+    comment_id: Int @doc(description: "Comment Id")
+    post_id: Int @doc(description: "Post Id")
+    position: Int @doc(description: "Position")
+    content: String @doc(description: "Content")
+    user_name: String @doc(description: "User Name")
+    user_email: String @doc(description: "Email")
+    has_read: Int @doc(description: "Has Been Read")
+    is_active: Int @doc(description: "Is Active")
+    parent_id: Int @doc(description: "Parent Id")
+}
+
+type RelatedPosts {
+    post_id: Int @doc(description: "Post Id")
+    post_related_id: Int @doc(description: "Post Related Id")
+    position: Int @doc(description: "Position")
+}
+
+type Blogs {
+    total_count: Int @doc(description: "The number of blogs returned")
+    items: [Blog] @doc(description: "An array of blogs that match the specified search criteria")
+}
+
+input BlogFilterInput {
+    post_id: FilterTypeInput @doc(description: "Post ID")
+    title: FilterTypeInput @doc(description: "Title")
+    identifier: FilterTypeInput @doc(description: "Identifier")
+    user_id: FilterTypeInput @doc(description: "User ID")
+    is_active: FilterTypeInput @doc(description: "Is Active")
+    like: FilterTypeInput @doc(description: "Like")
+    disklike: FilterTypeInput @doc(description: "Dislike")
+    or: BlogFilterInput @doc(description: "The keyword required to perform a logical OR comparison")
+}

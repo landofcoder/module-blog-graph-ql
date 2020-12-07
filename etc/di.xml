@@ -1,0 +1,11 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="Lof\BlogGraphQl\Api\BlogRepositoryInterface" type="Lof\BlogGraphQl\Model\BlogRepository"/>
+    <type name="Magento\Framework\GraphQl\Query\Resolver\Argument\FieldEntityAttributesPool">
+        <arguments>
+            <argument name="attributesInstances" xsi:type="array">
+                <item name="ves_blog_post" xsi:type="object">\Lof\BlogGraphQl\Model\Resolver\FilterArgumentBlog</item>
+            </argument>
+        </arguments>
+    </type>
+</config>
