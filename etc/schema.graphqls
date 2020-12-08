@@ -2,15 +2,26 @@
 type Query {
 
     lofBlogById (
-            post_id: Int @doc(description: "Query by id.")
+        post_id: Int @doc(description: "Query by id.")
     ) : Blog @resolver( class: "Lof\\BlogGraphQl\\Model\\Resolver\\Blog") @doc(description: "Query by Get blog by id.")
 
     lofBlogList(
-            search: String @doc(description: "Performs a full-text search using the specified key words."),
-            filter: BlogFilterInput @doc(description: "Identifies which product attributes to search for and return."),
-            pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. This attribute is optional."),
-            currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
-           ):Blogs @resolver(class: "\\Lof\\BlogGraphQl\\Model\\Resolver\\Blogs") @doc(description: "The blogs product query searches for blogs that match the criteria specified in the search and filter attributes")
+        search: String @doc(description: "Performs a full-text search using the specified key words."),
+        filter: BlogFilterInput @doc(description: "Identifies which product attributes to search for and return."),
+        pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. This attribute is optional."),
+        currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
+    ):Blogs @resolver(class: "\\Lof\\BlogGraphQl\\Model\\Resolver\\Blogs") @doc(description: "The blogs query searches for blogs that match the criteria specified in the search and filter attributes")
+
+    lofBlogAuthorById (
+        author_id: Int @doc(description: "Query by id.")
+    ) : Author @resolver( class: "Lof\\BlogGraphQl\\Model\\Resolver\\Author") @doc(description: "Query by Get Author by id.")
+
+    lofBlogAuthorList(
+        search: String @doc(description: "Performs a full-text search using the specified key words."),
+        filter: BlogFilterInput @doc(description: "Identifies which product attributes to search for and return."),
+        pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. This attribute is optional."),
+        currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
+    ):Authors @resolver(class: "\\Lof\\BlogGraphQl\\Model\\Resolver\\Authors") @doc(description: "The author query searches for authors that match the criteria specified in the search and filter attributes")
 }
 
 type Blog {
@@ -54,12 +65,30 @@ type Blog {
     category_id: [Int] @doc(description: "Category Ids.")
     related_posts: [RelatedPosts] @doc(description: "Related Posts.")
     related_products: [RelatedProducts] @doc(description: "Related Products.")
+    author: Author @doc (description: "Author.")
 }
 
 type RelatedProducts {
     post_id: Int @doc(description: "Post Id")
     entity_id: Int @doc(description: "Product Id")
     position: Int @doc(description: "Position")
+}
+type Author {
+    author_id: Int @doc(description: "Author Id")
+    email: String @doc(description: "Email")
+    user_name: String @doc(description: "User Id")
+    nick_name: String @doc(description: "Nick Name")
+    description: String @doc(description: "Description")
+    avatar: String @doc(description: "Avatar")
+    user_id: Int @doc(description: "User Id")
+    page_title: String @doc(description: "Page Title")
+    meta_keywords: String @doc(description: "Meta Keywords")
+    meta_description: String @doc(description: "Meta Description")
+    social_networks: String @doc(description: "Social Networks")
+    is_view: Int @doc(description: "Is View")
+    creation_time: String @doc(description: "Creation Time")
+    update_time: String @doc(description: "Update Time")
+    posts: Blogs @doc(description: "list Posts")
 }
 
 type Comment {
@@ -83,6 +112,11 @@ type RelatedPosts {
 type Blogs {
     total_count: Int @doc(description: "The number of blogs returned")
     items: [Blog] @doc(description: "An array of blogs that match the specified search criteria")
+}
+
+type Authors {
+    total_count: Int @doc(description: "The number of authors returned")
+    items: [Author] @doc(description: "An array of authors that match the specified search criteria")
 }
 
 input BlogFilterInput {
