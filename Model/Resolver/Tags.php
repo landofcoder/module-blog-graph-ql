@@ -13,10 +13,10 @@ use Magento\Framework\GraphQl\Exception\GraphQlInputException;
 use Magento\Framework\GraphQl\Exception\GraphQlNoSuchEntityException;
 use Magento\Framework\GraphQl\Query\ResolverInterface;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
-use Ves\Blog\Api\CategoryRepositoryInterface;
+use Ves\Blog\Api\TagRepositoryInterface;
 use Magento\Framework\GraphQl\Query\Resolver\Argument\SearchCriteria\Builder as SearchCriteriaBuilder;
 
-class Categories implements ResolverInterface
+class Tags implements ResolverInterface
 {
 
     /**
@@ -24,17 +24,17 @@ class Categories implements ResolverInterface
      */
     private $searchCriteriaBuilder;
     /**
-     * @var CategoryRepositoryInterface
+     * @var TagRepositoryInterface
      */
-    private $categoryRepository;
+    private $tagManagement;
 
     public function __construct(
-        CategoryRepositoryInterface $categoryRepository,
+        TagRepositoryInterface $tagManagement,
         SearchCriteriaBuilder $searchCriteriaBuilder
     )
     {
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
-        $this->categoryRepository = $categoryRepository;
+        $this->tagManagement = $tagManagement;
     }
 
     /**
@@ -53,11 +53,11 @@ class Categories implements ResolverInterface
         if ($args['pageSize'] < 1) {
             throw new GraphQlInputException(__('pageSize value must be greater than 0.'));
         }
-        $searchCriteria = $this->searchCriteriaBuilder->build( 'ves_blog_category', $args );
+        $searchCriteria = $this->searchCriteriaBuilder->build( 'ves_blog_post_tag', $args );
         $searchCriteria->setCurrentPage( $args['currentPage'] );
         $searchCriteria->setPageSize( $args['pageSize'] );
 
-        $searchResult = $this->categoryRepository->getList( $searchCriteria );
+        $searchResult = $this->tagManagement->getList( $searchCriteria );
 
         return [
             'total_count' => $searchResult->getTotalCount(),

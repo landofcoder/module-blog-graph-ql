@@ -53,7 +53,7 @@ class Authors implements ResolverInterface
         if ($args['pageSize'] < 1) {
             throw new GraphQlInputException(__('pageSize value must be greater than 0.'));
         }
-        $searchCriteria = $this->searchCriteriaBuilder->build( 'ves_blog_author', $args );
+        $searchCriteria = $this->searchCriteriaBuilder->build( 'ves_blog_post_author', $args );
         $searchCriteria->setCurrentPage( $args['currentPage'] );
         $searchCriteria->setPageSize( $args['pageSize'] );
 

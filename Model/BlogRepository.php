@@ -155,13 +155,15 @@ class BlogRepository implements BlogRepositoryInterface
         $items = [];
         foreach ($collection as $key => $model) {
             $model->load($model->getPostId());
-            $author = $this->helper->getPostAuthor($model);
-            $avatar = $this->getBaseUrl()."media/".$author->getAvatar();
-            $author->setAvatar($avatar);
             $items[$key] = $model->getData();
+            $author = $this->helper->getPostAuthor($model);
+            if ($author) {
+                $avatar = $this->getBaseUrl()."media/".$author->getAvatar();
+                $author->setAvatar($avatar);
+                $items[$key] ['author'] = $author->getData();
+            }
             $items[$key] ['image'] = $model->getImageUrl();
             $items[$key] ['thumbnail'] = $model->getThumbnailUrl();
-            $items[$key] ['author'] = $author->getData();
         }
 
         $searchResults->setItems($items);
