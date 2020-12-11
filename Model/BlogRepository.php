@@ -10,6 +10,7 @@ namespace Lof\BlogGraphQl\Model;
 use Lof\BlogGraphQl\Api\BlogRepositoryInterface;
 use Ves\Blog\Api\Data\PostSearchResultsInterfaceFactory;
 use Magento\Framework\App\ResourceConnection;
+use Ves\Blog\Helper\Data;
 use Ves\Blog\Model\ResourceModel\Post as ResourcePost;
 use Ves\Blog\Model\ResourceModel\Post\CollectionFactory as PostCollectionFactory;
 use Magento\Framework\Api\DataObjectHelper;
@@ -92,6 +93,10 @@ class BlogRepository implements BlogRepositoryInterface
      * @var PostCollectionFactory
      */
     private $postCollectionFactory;
+    /**
+     * @var Data
+     */
+    private $helper;
 
     /**
      * BlogRepository constructor.
@@ -104,6 +109,7 @@ class BlogRepository implements BlogRepositoryInterface
      * @param CollectionProcessorInterface $collectionProcessor
      * @param JoinProcessorInterface $extensionAttributesJoinProcessor
      * @param ExtensibleDataObjectConverter $extensibleDataObjectConverter
+     * @param Data $data
      * @param ResourceConnection $resourceConnection
      */
     public function __construct(
@@ -116,6 +122,7 @@ class BlogRepository implements BlogRepositoryInterface
         CollectionProcessorInterface $collectionProcessor,
         JoinProcessorInterface $extensionAttributesJoinProcessor,
         ExtensibleDataObjectConverter $extensibleDataObjectConverter,
+        Data $data,
         ResourceConnection $resourceConnection
     ) {
         $this->resource = $resource;
@@ -127,6 +134,7 @@ class BlogRepository implements BlogRepositoryInterface
         $this->collectionProcessor = $collectionProcessor;
         $this->extensionAttributesJoinProcessor = $extensionAttributesJoinProcessor;
         $this->extensibleDataObjectConverter = $extensibleDataObjectConverter;
+        $this->helper = $data;
         $this->_resourceConnection = $resourceConnection;
 
     }
@@ -148,7 +156,12 @@ class BlogRepository implements BlogRepositoryInterface
         foreach ($collection as $key => $model) {
             $model->load($model->getPostId());
             $items[$key] = $model->getData();
-            $items[$key] ['url_key'] = $model->getUrl();
+            $author = $this->helper->getPostAuthor($model);
+            if ($author) {
+                $avatar = $this->getBaseUrl()."media/".$author->getAvatar();
+                $author->setAvatar($avatar);
+                $items[$key] ['author'] = $author->getData();
+            }
             $items[$key] ['image'] = $model->getImageUrl();
             $items[$key] ['thumbnail'] = $model->getThumbnailUrl();
         }
@@ -158,4 +171,12 @@ class BlogRepository implements BlogRepositoryInterface
         return $searchResults;
     }
 
+    /**
+     * @return mixed
+     * @throws NoSuchEntityException
+     */
+    public function getBaseUrl()
+    {
+        return $this->storeManager->getStore()->getBaseUrl();
+    }
 }
