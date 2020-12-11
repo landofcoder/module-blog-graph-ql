@@ -1,6 +1,6 @@
 {
     "name": "landofcoder/module-blog-graphql",
-    "description": "Magento 2 Blog GraphQl extension",
+    "description": "Magento 2 Blog GraphQl extension use for Ves_Blog extension (commerce version)",
     "type": "magento2-module",
     "license": "OSL-3.0",
     "authors": [
@@ -13,7 +13,7 @@
     "minimum-stability": "dev",
     "version": "1.0.0",
     "require": {
-        "landofcoder/module-blog-graphql": "*"
+        "venustheme/module-blog": "*"
     },
     "autoload": {
         "psr-4": {

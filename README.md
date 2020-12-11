@@ -1,6 +1,6 @@
 # Mage2 Module Lof BlogGraphQl
 
-    ``lof/module-BlogGraphQl``
+    ``landofcoder/module-blog-graphql``
 
  - [Main Functionalities](#markdown-header-main-functionalities)
  - [Installation](#markdown-header-installation)
@@ -10,7 +10,7 @@
 
 
 ## Main Functionalities
-magento 2 blog graphql extension
+magento 2 blog graphql extension for extension [Ves_Blog (commerce version)](https://landofcoder.com/magento-2-blog-extension.html/)
 
 ## Installation
 \* = in production please use the `--keep-generated` option
