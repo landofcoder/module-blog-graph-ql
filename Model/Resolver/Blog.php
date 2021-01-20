@@ -41,9 +41,10 @@ class Blog implements ResolverInterface
         array $value = null,
         array $args = null
     ) {
-        if (!$this->postManagement->get($args['post_id'])) {
+        $post = $this->postManagement->get($args['post_id']);
+        if (!$post) {
             throw new GraphQlInputException(__('Post Id does not match any Post.'));
         }
-        return json_decode($this->postManagement->get($args['post_id']));
+        return $post;
     }
 }
