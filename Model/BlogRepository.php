@@ -17,12 +17,11 @@ use Magento\Framework\Api\DataObjectHelper;
 use Magento\Framework\Api\ExtensibleDataObjectConverter;
 use Magento\Framework\Api\ExtensionAttribute\JoinProcessorInterface;
 use Magento\Framework\Api\SearchCriteria\CollectionProcessorInterface;
-use Magento\Framework\Exception\CouldNotDeleteException;
-use Magento\Framework\Exception\CouldNotSaveException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Reflection\DataObjectProcessor;
 use Magento\Store\Model\StoreManagerInterface;
-
+use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
+use Magento\Catalog\Api\ProductRepositoryInterface;
 /**
  * Class BlogRepository
  * @package Lof\BlogGraphQl\Model
@@ -97,6 +96,14 @@ class BlogRepository implements BlogRepositoryInterface
      * @var Data
      */
     private $helper;
+    /**
+     * @var CollectionFactory
+     */
+    private $productCollection;
+    /**
+     * @var ProductRepositoryInterface
+     */
+    private $productRepository;
 
     /**
      * BlogRepository constructor.
@@ -111,6 +118,8 @@ class BlogRepository implements BlogRepositoryInterface
      * @param ExtensibleDataObjectConverter $extensibleDataObjectConverter
      * @param Data $data
      * @param ResourceConnection $resourceConnection
+     * @param CollectionFactory $productCollection
+     * @param ProductRepositoryInterface $productRepository
      */
     public function __construct(
         ResourcePost $resource,
@@ -123,7 +132,9 @@ class BlogRepository implements BlogRepositoryInterface
         JoinProcessorInterface $extensionAttributesJoinProcessor,
         ExtensibleDataObjectConverter $extensibleDataObjectConverter,
         Data $data,
-        ResourceConnection $resourceConnection
+        ResourceConnection $resourceConnection,
+        CollectionFactory $productCollection,
+        ProductRepositoryInterface $productRepository
     ) {
         $this->resource = $resource;
         $this->postCollectionFactory = $postCollectionFactory;
@@ -136,6 +147,8 @@ class BlogRepository implements BlogRepositoryInterface
         $this->extensibleDataObjectConverter = $extensibleDataObjectConverter;
         $this->helper = $data;
         $this->_resourceConnection = $resourceConnection;
+        $this->productCollection = $productCollection;
+        $this->productRepository = $productRepository;
 
     }
 
@@ -157,11 +170,16 @@ class BlogRepository implements BlogRepositoryInterface
             $model->load($model->getPostId());
             $items[$key] = $model->getData();
             $author = $this->helper->getPostAuthor($model);
+
             if ($author) {
                 $avatar = $this->getBaseUrl()."media/".$author->getAvatar();
                 $author->setAvatar($avatar);
                 $items[$key] ['author'] = $author->getData();
             }
+            $related = $model->getRelated();
+            $items[$key]['related_products'] = $related['related_products'];
+            $items[$key]['related_posts'] = $related['related_posts'];
+
             $items[$key] ['image'] = $model->getImageUrl();
             $items[$key] ['thumbnail'] = $model->getThumbnailUrl();
         }
