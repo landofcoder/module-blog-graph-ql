@@ -11,6 +11,7 @@ use Lof\BlogGraphQl\Api\CommentRepositoryInterface;
 use Ves\Blog\Api\Data\CommentSearchResultsInterfaceFactory;
 use Magento\Framework\App\ResourceConnection;
 use Ves\Blog\Helper\Data;
+use Ves\Blog\Model\Post;
 use Ves\Blog\Model\ResourceModel\Comment as ResourceComment;
 use Ves\Blog\Model\ResourceModel\Comment\CollectionFactory as CommentCollectionFactory;
 use Magento\Framework\Api\DataObjectHelper;
@@ -89,6 +90,10 @@ class CommentRepository implements CommentRepositoryInterface
      * @var ProductRepositoryInterface
      */
     private $productRepository;
+    /**
+     * @var Post
+     */
+    private $post;
 
     /**
      * BlogRepository constructor.
@@ -105,6 +110,7 @@ class CommentRepository implements CommentRepositoryInterface
      * @param ResourceConnection $resourceConnection
      * @param CollectionFactory $productCollection
      * @param ProductRepositoryInterface $productRepository
+     * @param Post $post
      */
     public function __construct(
         ResourceComment $resource,
@@ -119,7 +125,8 @@ class CommentRepository implements CommentRepositoryInterface
         Data $data,
         ResourceConnection $resourceConnection,
         CollectionFactory $productCollection,
-        ProductRepositoryInterface $productRepository
+        ProductRepositoryInterface $productRepository,
+        Post $post
     ) {
         $this->resource = $resource;
         $this->commentCollectionFactory = $commentCollectionFactory;
@@ -134,6 +141,7 @@ class CommentRepository implements CommentRepositoryInterface
         $this->_resourceConnection = $resourceConnection;
         $this->productCollection = $productCollection;
         $this->productRepository = $productRepository;
+        $this->post = $post;
 
     }
 
@@ -153,12 +161,23 @@ class CommentRepository implements CommentRepositoryInterface
         $items = [];
         foreach ($collection as $key => $model) {
             $model->load($model->getCommentId());
+            $post = $this->getPost($model->getPostId());
             $items[$key] = $model->getData();
+            $items[$key]['post_title'] = $post->getTitle();
+            $items[$key]['post_identifier'] = $post->getIdentifier();
         }
 
         $searchResults->setItems($items);
         $searchResults->setTotalCount($collection->getSize());
         return $searchResults;
+    }
+
+    /**
+     * @param $postId
+     * @return Post
+     */
+    public function getPost($postId) {
+        return $this->post->load($postId);
     }
 
     /**
