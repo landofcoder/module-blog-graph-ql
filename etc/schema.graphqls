@@ -384,6 +384,8 @@ type Comment {
     is_active: Int @doc(description: "Is Active")
     parent_id: Int @doc(description: "Parent Id")
     creation_time: String @doc(description: "Created At")
+    post_title: String @doc(description: "Post Title")
+    post_identifier: String @doc(description: "Post Identifier")
 }
 
 type Tag {
