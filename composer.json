@@ -13,7 +13,6 @@
     "minimum-stability": "dev",
     "version": "1.0.0",
     "require": {
-        "venustheme/module-blog": "*"
     },
     "autoload": {
         "psr-4": {
