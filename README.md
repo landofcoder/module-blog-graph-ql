@@ -10,7 +10,7 @@
 
 
 ## Main Functionalities
-magento 2 blog graphql extension for extension [Ves_Blog (commerce version)](https://landofcoder.com/magento-2-blog-extension.html/)
+magento 2 blog graphql extension for extension [Ves_Blog](https://landofcoder.com/magento-2-blog-extension.html/)
 
 ## Installation
 \* = in production please use the `--keep-generated` option
