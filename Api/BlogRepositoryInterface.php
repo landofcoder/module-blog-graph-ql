@@ -16,13 +16,11 @@ use Magento\Framework\Api\SearchCriteriaInterface;
 interface BlogRepositoryInterface
 {
 
-
     /**
      * @param SearchCriteriaInterface $searchCriteria
-     * @return mixed
+     * @return \Ves\Blog\Api\Data\PostSearchResultsInterface
      */
     public function getListPost(
         \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
     );
-
 }

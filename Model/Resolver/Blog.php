@@ -17,8 +17,6 @@ use Ves\Blog\Api\PostManagementInterface;
 
 class Blog implements ResolverInterface
 {
-
-
     /**
      * @var PostManagementInterface
      */

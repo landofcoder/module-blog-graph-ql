@@ -1,4 +1,4 @@
-# Mage2 Module Lof BlogGraphQl
+# Magento 2 Module Lof BlogGraphQl
 
     ``landofcoder/module-blog-graphql``
 
@@ -36,6 +36,9 @@ magento 2 blog graphql extension for extension [Ves_Blog](https://landofcoder.co
 
 
 ## Configuration
+
+
+## Queries
 
 
 

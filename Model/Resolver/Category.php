@@ -17,13 +17,14 @@ use Ves\Blog\Api\CategoryRepositoryInterface;
 
 class Category implements ResolverInterface
 {
-
-
     /**
      * @var CategoryRepositoryInterface
      */
     private $categoryRepository;
 
+    /**
+     * @param CategoryRepositoryInterface $categoryRepository
+     */
     public function __construct(
         CategoryRepositoryInterface $categoryRepository
     )

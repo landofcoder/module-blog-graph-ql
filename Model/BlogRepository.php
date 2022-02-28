@@ -160,6 +160,11 @@ class BlogRepository implements BlogRepositoryInterface
     ) {
         $collection = $this->postCollectionFactory->create();
 
+        $this->extensionAttributesJoinProcessor->process(
+            $collection,
+            \Ves\Blog\Api\Data\PostInterface::class
+        );
+
         $this->collectionProcessor->process($criteria, $collection);
 
         $searchResults = $this->searchResultsFactory->create();
@@ -167,21 +172,10 @@ class BlogRepository implements BlogRepositoryInterface
 
         $items = [];
         foreach ($collection as $key => $model) {
-            $model->load($model->getPostId());
-            $items[$key] = $model->getData();
-            $author = $this->helper->getPostAuthor($model);
-
-            if ($author) {
-                $avatar = $this->getBaseUrl()."media/".$author->getAvatar();
-                $author->setAvatar($avatar);
-                $items[$key] ['author'] = $author->getData();
-            }
-            $related = $model->getRelated();
-            $items[$key]['related_products'] = $related['related_products'];
-            $items[$key]['related_posts'] = $related['related_posts'];
-
-            $items[$key] ['image'] = $model->getImageUrl();
-            $items[$key] ['thumbnail'] = $model->getThumbnailUrl();
+            $_item = $model->getDataModel();
+            $_item->setImage($model->getImageUrl());
+            $_item->setThumbnail($model->getThumbnailUrl());
+            $items[] = $_item;
         }
 
         $searchResults->setItems($items);

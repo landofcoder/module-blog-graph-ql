@@ -28,6 +28,10 @@ class Categories implements ResolverInterface
      */
     private $categoryRepository;
 
+    /**
+     * @param CategoryRepositoryInterface $categoryRepository
+     * @param SearchCriteriaBuilder $searchCriteriaBuilder
+     */
     public function __construct(
         CategoryRepositoryInterface $categoryRepository,
         SearchCriteriaBuilder $searchCriteriaBuilder
