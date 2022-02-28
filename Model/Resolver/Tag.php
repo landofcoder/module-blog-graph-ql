@@ -13,7 +13,7 @@ use Magento\Framework\GraphQl\Query\ResolverInterface;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
 use Ves\Blog\Api\PostRepositoryInterface;
 use Ves\Blog\Api\TagRepositoryInterface;
-use Ves\Blog\Model\ResourceModel\Tag\Collection;
+use Ves\Blog\Model\ResourceModel\Tag\CollectionFactory;
 
 /**
  * Class Tag
@@ -21,16 +21,16 @@ use Ves\Blog\Model\ResourceModel\Tag\Collection;
  */
 class Tag implements ResolverInterface
 {
-
-
     /**
      * @var TagRepositoryInterface
      */
     private $tagManagement;
+
     /**
-     * @var Collection
+     * @var CollectionFactory
      */
-    private $tagCollection;
+    private $collectionFactory;
+
     /**
      * @var PostRepositoryInterface
      */
@@ -39,17 +39,17 @@ class Tag implements ResolverInterface
     /**
      * Tag constructor.
      * @param TagRepositoryInterface $tagManagement
-     * @param Collection $tagCollection
+     * @param CollectionFactory $collectionFactory
      * @param PostRepositoryInterface $postRepositoryInterface
      */
     public function __construct(
         TagRepositoryInterface $tagManagement,
-        Collection $tagCollection,
+        CollectionFactory $collectionFactory,
         PostRepositoryInterface $postRepositoryInterface
     )
     {
         $this->tagManagement = $tagManagement;
-        $this->tagCollection = $tagCollection;
+        $this->collectionFactory = $collectionFactory;
         $this->postRepositoryInterface = $postRepositoryInterface;
 
     }
@@ -64,26 +64,21 @@ class Tag implements ResolverInterface
         array $value = null,
         array $args = null
     ) {
-        if (!isset($args['alias']) || !$args['alias']) {
+        if (!isset($args['alias']) || empty($args['alias'])) {
             throw new GraphQlInputException(__('"Alias" can\'t be empty.'));
         }
-        $collection = $this->tagCollection->addFieldToFilter('alias' , $args['alias']);
-        if (!$collection->getData()) {
+        $collection = $this->collectionFactory->create()
+                        ->addFieldToFilter('alias' , $args['alias']);
+        if (!$collection->getSize()) {
             throw new GraphQlInputException(__('This Tag does not exist.'));
         }
         $tag = $collection->getFirstItem();
-        $posts = [];
-        $postIds = [];
-        foreach ($collection as $item) {
-            $post = $this->postRepositoryInterface->get($item->getPostId());
-            $postIds[] = $item->getPostId();
-            if($post) {
-                $posts[] = $post;
-            }
-        }
-        $postItems['total_count'] = count($collection);
-        $postItems['items'] = $posts;
-        $tag->setPosts($postItems)->setPostId($postIds);
-        return $tag;
+        return [
+            "name" => $tag->getName(),
+            "alias" => $tag->getAlias(),
+            "meta_robots" => $tag->getMetaRobots(),
+            "total_posts" => $collection->getSize(),
+            "model" => $collection
+        ];
     }
 }

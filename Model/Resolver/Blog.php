@@ -22,6 +22,9 @@ class Blog implements ResolverInterface
      */
     private $postManagement;
 
+    /**
+     * @var PostManagementInterface $postManagement
+     */
     public function __construct(
         PostManagementInterface $postManagement
     )
@@ -39,8 +42,11 @@ class Blog implements ResolverInterface
         array $value = null,
         array $args = null
     ) {
+        if (empty($args['post_id'])) {
+            throw new GraphQlInputException(__('Post Id is required.'));
+        }
         $post = $this->postManagement->get($args['post_id']);
-        if (!$post) {
+        if (!$post || !$post->getIsActive()) {
             throw new GraphQlInputException(__('Post Id does not match any Post.'));
         }
         return $post;

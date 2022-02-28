@@ -23,11 +23,16 @@ class Blogs implements ResolverInterface
      * @var SearchCriteriaBuilder
      */
     private $searchCriteriaBuilder;
+
     /**
      * @var BlogRepositoryInterface
      */
     private $postManagement;
 
+    /**
+     * @param BlogRepositoryInterface $postManagement
+     * @param SearchCriteriaBuilder $searchCriteriaBuilder
+     */
     public function __construct(
         BlogRepositoryInterface $postManagement,
         SearchCriteriaBuilder $searchCriteriaBuilder

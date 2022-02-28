@@ -21,11 +21,16 @@ class Comments implements ResolverInterface
      * @var SearchCriteriaBuilder
      */
     private $searchCriteriaBuilder;
+
     /**
      * @var CommentRepositoryInterface
      */
     private $commentManagement;
 
+    /**
+     * @var CommentRepositoryInterface $commentManagement
+     * @var SearchCriteriaBuilder $searchCriteriaBuilder
+     */
     public function __construct(
         CommentRepositoryInterface $commentManagement,
         SearchCriteriaBuilder $searchCriteriaBuilder

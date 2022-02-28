@@ -18,12 +18,14 @@ use Ves\Blog\Api\AuthorRepositoryInterface;
 class Author implements ResolverInterface
 {
 
-
     /**
      * @var AuthorRepositoryInterface
      */
     private $authorManagement;
 
+    /**
+     * @var AuthorRepositoryInterface $authorManagement
+     */
     public function __construct(
         AuthorRepositoryInterface $authorManagement
     )
@@ -41,9 +43,13 @@ class Author implements ResolverInterface
         array $value = null,
         array $args = null
     ) {
-        if (!$this->authorManagement->get($args['author_id'])) {
+        if (empty($args['author_id'])) {
+            throw new GraphQlInputException(__('Author Id is required.'));
+        }
+        $author = $this->authorManagement->get($args['author_id']);
+        if (!$author) {
             throw new GraphQlInputException(__('Author Id does not match any Author.'));
         }
-        return $this->authorManagement->get($args['author_id']);
+        return $author;
     }
 }

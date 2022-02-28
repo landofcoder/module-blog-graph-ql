@@ -42,9 +42,14 @@ class Category implements ResolverInterface
         array $value = null,
         array $args = null
     ) {
-        if (!$this->categoryRepository->get($args['category_id'])) {
+        if (empty($args['category_id'])) {
+            throw new GraphQlInputException(__('Category Id is required.'));
+        }
+        $store = $context->getExtensionAttributes()->getStore();
+        $category = $this->categoryRepository->view($args['category_id'], $store->getId());
+        if (!$category || !$category->getIsActive()) {
             throw new GraphQlInputException(__('Category Id does not match any Author.'));
         }
-        return $this->categoryRepository->get($args['category_id']);
+        return $category;
     }
 }

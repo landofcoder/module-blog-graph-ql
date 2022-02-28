@@ -1,7 +1,7 @@
 type Query {
 
     blogPost (
-        post_id: Int @doc(description: "Query by id.")
+        post_id: Int! @doc(description: "Query by id.")
     ) : BlogPost @resolver( class: "Lof\\BlogGraphQl\\Model\\Resolver\\Blog") @doc(description: "Query by Get blog by id.")
 
     blogArchive : [ArchiveBlog] @resolver( class: "Lof\\BlogGraphQl\\Model\\Resolver\\ArchiveBlogs") @doc(description: "Query ArchiveBlogs.")
@@ -15,7 +15,7 @@ type Query {
     ) : BlogPosts @resolver(class: "\\Lof\\BlogGraphQl\\Model\\Resolver\\Blogs") @doc(description: "The blog posts query searches for blog posts that match the criteria specified in the search and filter attributes")
 
     blogAuthor (
-        author_id: Int @doc(description: "Query by id.")
+        author_id: Int! @doc(description: "Query by id.")
     ) : BlogAuthor @resolver( class: "Lof\\BlogGraphQl\\Model\\Resolver\\Author") @doc(description: "Query by Get Author info by id.")
 
     blogAuthors (
@@ -26,7 +26,7 @@ type Query {
     ) : BlogAuthors @resolver(class: "\\Lof\\BlogGraphQl\\Model\\Resolver\\Authors") @doc(description: "The author list query searches for authors that match the criteria specified in the search and filter attributes")
 
     blogCategory (
-        category_id: Int @doc(description: "Query by id.")
+        category_id: Int! @doc(description: "Query by id.")
     ) : BlogCategory @resolver( class: "Lof\\BlogGraphQl\\Model\\Resolver\\Category") @doc(description: "Query by Get Category by id.")
 
     blogCategories (
@@ -37,7 +37,7 @@ type Query {
     ) : BlogCategories @resolver(class: "\\Lof\\BlogGraphQl\\Model\\Resolver\\Categories") @doc(description: "The category list query searches for categories that match the criteria specified in the search and filter attributes")
 
     blogTag (
-        alias: String @doc(description: "Query by alias.")
+        alias: String! @doc(description: "Query by alias.")
     ) : BlogTag @resolver( class: "Lof\\BlogGraphQl\\Model\\Resolver\\Tag") @doc(description: "Query tag info by tag Alias.")
 
     blogTags (
@@ -91,7 +91,7 @@ type BlogPost {
     real_thumbnail_url  : String  @doc(description: "Real Thumbnail Url.")
     store_ids: [Int] @doc(description: "Store Ids.")
     category_id: [Int] @doc(description: "Category Ids.")
-    categories: [BlogCategory] @resolver(class: "\\Lof\\BlogGraphQl\\Model\\Resolver\\Post\Categories") @doc(description: "Query Post Categories.")
+    categories: BlogCategories @resolver(class: "\\Lof\\BlogGraphQl\\Model\\Resolver\\Post\Categories") @doc(description: "Query Post Categories.")
     comments (
         search: String @doc(description: "Performs a full-text search using the specified key words.")
         filter: BlogCommentFilterInput @doc(description: "Identifies which blog attributes to search for and return."),
@@ -183,10 +183,10 @@ type BlogComment {
 }
 
 type BlogTag {
-    post_id: [Int] @doc(description: "Post Id")
     name: String @doc(description: "Name")
     alias: String @doc(description: "Alias")
     meta_robots: String @doc(description: "User Name")
+    total_posts: Int @doc(description: "Total Posts")
     posts (
         sort: BlogSortInput @doc(description: "Identifies which blog attributes to sort.")
         pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. This attribute is optional.")
@@ -297,10 +297,10 @@ input BlogCommentSortInput {
 }
 
 input SubmitCommentInput @doc(description: "SubmitCommentInput submit comment for a post") {
-    post_id: Int @doc(description: "Post Id")
+    post_id: Int! @doc(description: "Post Id")
     parent_id: Int @doc(description: "Parent Id")
-    content: String @doc(description: "Content")
-    user_name: String @doc(description: "User Name")
+    content: String! @doc(description: "Comment Content")
+    user_name: String! @doc(description: "User Name")
     user_email: String @doc(description: "User Email")
 }
 
