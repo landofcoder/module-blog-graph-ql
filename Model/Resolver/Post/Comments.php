@@ -16,7 +16,7 @@ use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
 use Magento\Framework\GraphQl\Query\Resolver\Argument\SearchCriteria\Builder as SearchCriteriaBuilder;
 use Lof\BlogGraphQl\Api\CommentRepositoryInterface;
 
-class Categories implements ResolverInterface
+class Comments implements ResolverInterface
 {
 
     /**

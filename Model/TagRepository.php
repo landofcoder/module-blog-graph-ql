@@ -7,7 +7,7 @@ declare(strict_types=1);
 
 namespace Lof\BlogGraphQl\Model;
 
-use Ves\BlogGraphQl\Api\TagRepositoryInterface;
+use Lof\BlogGraphQl\Api\TagRepositoryInterface;
 use Ves\Blog\Api\Data\TagInterfaceFactory;
 use Ves\Blog\Api\Data\TagSearchResultsInterfaceFactory;
 use Ves\Blog\Model\TagFactory;
@@ -82,11 +82,6 @@ class TagRepository implements TagRepositoryInterface
      * @var DataObjectHelper
      */
     protected $dataObjectHelper;
-    /**
-     * @var PostRepository
-     */
-    private $postRepository;
-
 
     /**
      * @param ResourceTag $resource
@@ -100,7 +95,6 @@ class TagRepository implements TagRepositoryInterface
      * @param CollectionProcessorInterface $collectionProcessor
      * @param JoinProcessorInterface $extensionAttributesJoinProcessor
      * @param ExtensibleDataObjectConverter $extensibleDataObjectConverter
-     * @param PostRepository $postRepository
      */
     public function __construct(
         ResourceTag $resource,
@@ -113,8 +107,7 @@ class TagRepository implements TagRepositoryInterface
         StoreManagerInterface $storeManager,
         CollectionProcessorInterface $collectionProcessor,
         JoinProcessorInterface $extensionAttributesJoinProcessor,
-        ExtensibleDataObjectConverter $extensibleDataObjectConverter,
-        PostRepository $postRepository
+        ExtensibleDataObjectConverter $extensibleDataObjectConverter
     ) {
         $this->resource = $resource;
         $this->tagFactory = $tagFactory;
@@ -127,7 +120,6 @@ class TagRepository implements TagRepositoryInterface
         $this->collectionProcessor = $collectionProcessor;
         $this->extensionAttributesJoinProcessor = $extensionAttributesJoinProcessor;
         $this->extensibleDataObjectConverter = $extensibleDataObjectConverter;
-        $this->postRepository = $postRepository;
     }
 
     /**

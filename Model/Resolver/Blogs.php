@@ -27,19 +27,19 @@ class Blogs implements ResolverInterface
     /**
      * @var BlogRepositoryInterface
      */
-    private $postManagement;
+    private $repository;
 
     /**
-     * @param BlogRepositoryInterface $postManagement
+     * @param BlogRepositoryInterface $repository
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
      */
     public function __construct(
-        BlogRepositoryInterface $postManagement,
+        BlogRepositoryInterface $repository,
         SearchCriteriaBuilder $searchCriteriaBuilder
     )
     {
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
-        $this->postManagement = $postManagement;
+        $this->repository = $repository;
     }
 
     /**
@@ -62,11 +62,16 @@ class Blogs implements ResolverInterface
         $searchCriteria->setCurrentPage( $args['currentPage'] );
         $searchCriteria->setPageSize( $args['pageSize'] );
 
-        $searchResult = $this->postManagement->getListPost( $searchCriteria );
+        $searchResult = $this->repository->getListPost( $searchCriteria );
 
+        $items = [];
+        foreach ($searchResult->getItems() as $_item) {
+            $_item["model"] = $_item;
+            $items[] = $_item;
+        }
         return [
             'total_count' => $searchResult->getTotalCount(),
-            'items'       => $searchResult->getItems(),
+            'items'       => $items
         ];
     }
 }

@@ -15,7 +15,7 @@ use Magento\Framework\GraphQl\Query\ResolverInterface;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
 
-class RelatedPosts implements ResolverInterface
+class RelatedProducts implements ResolverInterface
 {
 
     /**

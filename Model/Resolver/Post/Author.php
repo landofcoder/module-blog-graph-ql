@@ -15,7 +15,7 @@ use Magento\Framework\GraphQl\Query\ResolverInterface;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
 use Ves\Blog\Model\AuthorFactory;
 
-class RelatedPosts implements ResolverInterface
+class Author implements ResolverInterface
 {
 
     /**
