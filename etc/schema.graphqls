@@ -47,6 +47,14 @@ type Query {
         currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
     ) : BlogTags @resolver(class: "\\Lof\\BlogGraphQl\\Model\\Resolver\\Tags") @doc(description: "The tags query searches for tags that match the criteria specified in the search and filter attributes")
 
+    blogCommentList (
+        search: String @doc(description: "Performs a full-text search using the specified key words."),
+        filter: CommentFilterInput @doc(description: "Identifies which blog attributes to search for and return."),
+        sort: CommentSortInput @doc(description: "Identifies which blog attributes to sort."),
+        pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. This attribute is optional."),
+        currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1."),
+    ): Comments @resolver(class: "\\Lof\\BlogGraphQl\\Model\\Resolver\\Comments") @doc(description: "The comments query searches for blogs that match the criteria specified in the search and filter attributes")
+
 }
 
 type Mutation {
@@ -59,7 +67,6 @@ type BlogPost {
     identifier  : String  @doc(description: "identifier.")
     content  : String  @doc(description: "content.")
     short_content  : String  @doc(description: "short_content.")
-    user_id  : Int  @doc(description: "user_id.")
     is_active : Int  @doc(description: "is_active.")
     image  : String  @doc(description: "image.")
     image_type  : String  @doc(description: "image_type.")
@@ -73,7 +80,6 @@ type BlogPost {
     page_title  : String  @doc(description: "page_title.")
     meta_keywords  : String  @doc(description: "meta_keywords.")
     meta_description  : String  @doc(description: "meta_description.")
-    tags  : String  @doc(description: "tags.")
     hits  : String  @doc(description: "hits.")
     creation_time  : String  @doc(description: "creation_time.")
     update_time  : String  @doc(description: "update_time.")
@@ -91,6 +97,7 @@ type BlogPost {
     real_thumbnail_url  : String  @doc(description: "Real Thumbnail Url.")
     store_ids: [Int] @doc(description: "Store Ids.")
     category_id: [Int] @doc(description: "Category Ids.")
+    tags: BlogTags  @doc(description: "list post tags.") @resolver(class: "\\Lof\\BlogGraphQl\\Model\\Resolver\\Post\Tags") @doc(description: "Query Post Categories.")
     categories: BlogCategories @resolver(class: "\\Lof\\BlogGraphQl\\Model\\Resolver\\Post\Categories") @doc(description: "Query Post Categories.")
     comments (
         search: String @doc(description: "Performs a full-text search using the specified key words.")
@@ -98,8 +105,8 @@ type BlogPost {
         sort: BlogCommentSortInput @doc(description: "Identifies which blog attributes to sort."),
         pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. This attribute is optional."),
         currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1.")
-    ) : BlogComments @resolver(class: "\\Lof\\BlogGraphQl\\Model\\Resolver\\Comments") @doc(description: "The post comments query searches for blog post comments that match the criteria specified in the search and filter attributes")
-    related_posts: [BlogPost] @resolver(class: "\\Lof\\BlogGraphQl\\Model\\Resolver\\Post\RelatedPosts") @doc(description: "Related Posts.")
+    ) : BlogComments @resolver(class: "\\Lof\\BlogGraphQl\\Model\\Resolver\\Post\\Comments") @doc(description: "The post comments query searches for blog post comments that match the criteria specified in the search and filter attributes")
+    related_posts: BlogPosts @resolver(class: "\\Lof\\BlogGraphQl\\Model\\Resolver\\Post\RelatedPosts") @doc(description: "Related Posts.")
     related_products: Products @resolver(class: "\\Lof\\BlogGraphQl\\Model\\Resolver\\Post\RelatedProducts") @doc(description: "Related Products.")
     author: BlogAuthor @resolver(class: "\\Lof\\BlogGraphQl\\Model\\Resolver\\Post\Author")  @doc (description: "Author.")
 }
@@ -113,11 +120,9 @@ type BlogRelatedProducts {
 type BlogAuthor {
     author_id: Int @doc(description: "Author Id")
     email: String @doc(description: "Email")
-    user_name: String @doc(description: "User Id")
     nick_name: String @doc(description: "Nick Name")
     description: String @doc(description: "Description")
     avatar: String @doc(description: "Avatar")
-    user_id: Int @doc(description: "User Id")
     page_title: String @doc(description: "Page Title")
     meta_keywords: String @doc(description: "Meta Keywords")
     meta_description: String @doc(description: "Meta Description")
@@ -126,6 +131,7 @@ type BlogAuthor {
     creation_time: String @doc(description: "Creation Time")
     update_time: String @doc(description: "Update Time")
     posts (
+        filter: BlogFilterInput @doc(description: "Identifies which blog attributes to search for and return.")
         sort: BlogSortInput @doc(description: "Identifies which blog attributes to sort.")
         pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. This attribute is optional.")
         currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1.")
@@ -162,6 +168,7 @@ type BlogCategory {
     posts_template: String @doc(description: "Post Template")
     stores: [Int] @doc(description: "Store Ids")
     posts (
+        filter: BlogFilterInput @doc(description: "Identifies which blog attributes to search for and return.")
         sort: BlogSortInput @doc(description: "Identifies which blog attributes to sort.")
         pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. This attribute is optional.")
         currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1.")
@@ -188,6 +195,7 @@ type BlogTag {
     meta_robots: String @doc(description: "User Name")
     total_posts: Int @doc(description: "Total Posts")
     posts (
+        filter: BlogFilterInput @doc(description: "Identifies which blog attributes to search for and return.")
         sort: BlogSortInput @doc(description: "Identifies which blog attributes to sort.")
         pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. This attribute is optional.")
         currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1.")
@@ -247,7 +255,6 @@ input BlogPostFilterInput {
     post_id: FilterTypeInput @doc(description: "Post ID")
     title: FilterTypeInput @doc(description: "Title")
     identifier: FilterTypeInput @doc(description: "Identifier")
-    user_id: FilterTypeInput @doc(description: "User ID")
     is_active: FilterTypeInput @doc(description: "Is Active")
     like: FilterTypeInput @doc(description: "Like")
     disklike: FilterTypeInput @doc(description: "Dislike")
@@ -261,7 +268,6 @@ input BlogAuthorFilterInput {
     email: FilterTypeInput @doc(description: "Email")
     user_name: FilterTypeInput @doc(description: "User Name")
     nick_name: FilterTypeInput @doc(description: "Nick Name")
-    user_id: FilterTypeInput @doc(description: "User Id")
     meta_keywords: FilterTypeInput @doc(description: "Meta Keywords")
     or: BlogAuthorFilterInput @doc(description: "The keyword required to perform a logical OR comparison")
 }

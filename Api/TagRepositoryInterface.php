@@ -18,5 +18,15 @@ interface TagRepositoryInterface
     public function getList(
         \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
     );
+
+    /**
+     * Retrieve Tag matching the specified criteria.
+     * @param int $postId
+     * @return \Ves\Blog\Model\ResourceModel\Tag\Collection
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function getListByPost(
+        int $postId
+    );
 }
 

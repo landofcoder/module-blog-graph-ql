@@ -20,7 +20,7 @@ interface CommentRepositoryInterface
      * @return mixed
      */
     public function getListComment(
-        \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
+        SearchCriteriaInterface $searchCriteria
     );
 
     /**
@@ -30,7 +30,7 @@ interface CommentRepositoryInterface
      */
     public function getPostComments(
         int $post_id,
-        \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
+        SearchCriteriaInterface $searchCriteria
     );
 
 }

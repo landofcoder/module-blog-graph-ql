@@ -5,7 +5,7 @@
  */
 declare(strict_types=1);
 
-namespace Lof\BlogGraphQl\Model\Resolver\Author;
+namespace Lof\BlogGraphQl\Model\Resolver\Post;
 
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\GraphQl\Config\Element\Field;
@@ -13,11 +13,16 @@ use Magento\Framework\GraphQl\Exception\GraphQlInputException;
 use Magento\Framework\GraphQl\Exception\GraphQlNoSuchEntityException;
 use Magento\Framework\GraphQl\Query\ResolverInterface;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
-use Lof\BlogGraphQl\Api\BlogRepositoryInterface;
 use Magento\Framework\GraphQl\Query\Resolver\Argument\SearchCriteria\Builder as SearchCriteriaBuilder;
+use Lof\BlogGraphQl\Api\CommentRepositoryInterface;
 
-class Posts implements ResolverInterface
+class Categories implements ResolverInterface
 {
+
+    /**
+     * @var CommentRepositoryInterface
+     */
+    protected $repository;
 
     /**
      * @var SearchCriteriaBuilder
@@ -25,21 +30,16 @@ class Posts implements ResolverInterface
     private $searchCriteriaBuilder;
 
     /**
-     * @var BlogRepositoryInterface
-     */
-    private $repository;
-
-    /**
-     * @param BlogRepositoryInterface $repository
+     * @param CommentRepositoryInterface $repository
      * @param SearchCriteriaBuilder $searchCriteriaBuilder
      */
     public function __construct(
-        BlogRepositoryInterface $repository,
+        CommentRepositoryInterface $repository,
         SearchCriteriaBuilder $searchCriteriaBuilder
     )
     {
-        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
         $this->repository = $repository;
+        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
     }
 
     /**
@@ -59,15 +59,22 @@ class Posts implements ResolverInterface
             throw new GraphQlInputException(__('pageSize value must be greater than 0.'));
         }
 
-        if (!isset($value['user_id']) || empty($value['user_id'])) {
-            throw new GraphQlInputException(__('user id value must be not empty.'));
+        if (!isset($value['model']) || empty($value['model'])) {
+            throw new GraphQlInputException(__('model value must be not empty.'));
         }
 
-        $searchCriteria = $this->searchCriteriaBuilder->build( 'ves_blog_post', $args );
+        /** @var \Ves\Blog\Model\Post */
+        $post = $value['model'];
+
+        if (!$post->getId()) {
+            return [];
+        }
+
+        $searchCriteria = $this->searchCriteriaBuilder->build( 'ves_blog_comment', $args );
         $searchCriteria->setCurrentPage( $args['currentPage'] );
         $searchCriteria->setPageSize( $args['pageSize'] );
 
-        $searchResult = $this->repository->getListPostByUser( (int)$value['user_id'], $searchCriteria );
+        $searchResult = $this->repository->getPostComments((int)$post->getId(), $searchCriteria );
 
         return [
             'total_count' => $searchResult->getTotalCount(),

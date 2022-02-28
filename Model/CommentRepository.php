@@ -143,7 +143,6 @@ class CommentRepository implements CommentRepositoryInterface
         $this->productCollection = $productCollection;
         $this->productRepository = $productRepository;
         $this->post = $post;
-
     }
 
     /**

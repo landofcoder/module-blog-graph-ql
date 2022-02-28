@@ -3,6 +3,7 @@
     <preference for="Lof\BlogGraphQl\Api\BlogRepositoryInterface" type="Lof\BlogGraphQl\Model\BlogRepository"/>
     <preference for="Lof\BlogGraphQl\Api\CommentRepositoryInterface" type="Lof\BlogGraphQl\Model\CommentRepository"/>
     <preference for="Lof\BlogGraphQl\Api\TagRepositoryInterface" type="Lof\BlogGraphQl\Model\TagRepository"/>
+    <preference for="Lof\BlogGraphQl\Api\GetPostRepositoryInterface" type="Lof\BlogGraphQl\Model\GetPostRepository"/>
 
     <type name="Magento\Framework\GraphQl\Query\Resolver\Argument\FieldEntityAttributesPool">
         <arguments>

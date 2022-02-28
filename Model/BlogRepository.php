@@ -158,6 +158,48 @@ class BlogRepository implements BlogRepositoryInterface
     public function getListPost(
         \Magento\Framework\Api\SearchCriteriaInterface $criteria
     ) {
+        return $this->getFilterCollection($criteria);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getListPostByTag(
+        string $tag,
+        \Magento\Framework\Api\SearchCriteriaInterface $criteria
+    ) {
+        return $this->getFilterCollection($criteria, $tag);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getListPostByUser(
+        int $userId,
+        \Magento\Framework\Api\SearchCriteriaInterface $criteria
+    ) {
+        return $this->getFilterCollection($criteria, null, $userId);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getListPostByCategory(
+        int $categoryId,
+        \Magento\Framework\Api\SearchCriteriaInterface $criteria
+    ) {
+        return $this->getFilterCollection($criteria, null, null, $categoryId);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getFilterCollection(
+        \Magento\Framework\Api\SearchCriteriaInterface $criteria,
+        string $tag = null,
+        int $userId = null,
+        int $categoryId = null
+    ) {
         $collection = $this->postCollectionFactory->create();
 
         $this->extensionAttributesJoinProcessor->process(
@@ -166,6 +208,18 @@ class BlogRepository implements BlogRepositoryInterface
         );
 
         $this->collectionProcessor->process($criteria, $collection);
+
+        if ($tag) {
+            $collection = $this->addFilterTag($tag, $collection);
+        }
+
+        if ($userId) {
+            $collection->addFieldToFilter("user_id", (int)$userId);
+        }
+
+        if ($categoryId) {
+            $collection->addCategoryFilter("category_id", (int)$categoryId);
+        }
 
         $searchResults = $this->searchResultsFactory->create();
         $searchResults->setSearchCriteria($criteria);
@@ -181,6 +235,28 @@ class BlogRepository implements BlogRepositoryInterface
         $searchResults->setItems($items);
         $searchResults->setTotalCount($collection->getSize());
         return $searchResults;
+    }
+
+    /**
+     * join and filter tag
+     *
+     * @param string $tag
+     * @param \Ves\Blog\Model\ResourceModel\Post\Collection
+     * @return \Ves\Blog\Model\ResourceModel\Post\Collection
+     */
+    public function addFilterTag(string $tag, $collection)
+    {
+        $collection->getSelect()
+                    ->join(
+                        ['post_tag_table' => $collection->getResource()->getTable("ves_blog_post_tag")],
+                        'main_table.post_id = post_tag_table.post_id',
+                        []
+                    )
+                    ->where("post_tag_table.alias = ?", $tag)
+                    ->group(
+                        'main_table.post_id'
+                    );
+        return $collection;
     }
 
     /**

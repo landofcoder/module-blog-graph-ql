@@ -13,24 +13,24 @@ use Magento\Framework\GraphQl\Exception\GraphQlInputException;
 use Magento\Framework\GraphQl\Exception\GraphQlNoSuchEntityException;
 use Magento\Framework\GraphQl\Query\ResolverInterface;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
-use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
+use Lof\BlogGraphQl\Api\TagRepositoryInterface;
 
-class RelatedPosts implements ResolverInterface
+class Tags implements ResolverInterface
 {
 
     /**
-     * @var CollectionFactory
+     * @var TagRepositoryInterface
      */
-    protected $collectionFactory;
+    protected $repository;
 
     /**
-     * @param CollectionFactory $collectionFactory
+     * @param TagRepositoryInterface $repository
      */
     public function __construct(
-        CollectionFactory $collectionFactory
+        TagRepositoryInterface $repository
     )
     {
-        $this->collectionFactory = $collectionFactory;
+        $this->repository = $repository;
     }
 
     /**
@@ -50,26 +50,14 @@ class RelatedPosts implements ResolverInterface
         /** @var \Ves\Blog\Model\Post */
         $post = $value['model'];
 
-        if (!$post->getId() || !$post->getRelatedProducts()) {
+        if (!$post->getPostId()) {
             return [];
         }
-
-        $relatedProducts = $post->getRelatedProducts();
-
-        $store = $context->getExtensionAttributes()->getStore();
-
-        $collection = $this->collectionFactory->create()
-                                ->setStore($store)
-                                ->addFieldToFilter('entity_id', ['in' => $relatedProducts]);
-
-        $items = [];
-        foreach ($collection as $model) {
-            $items[] = $model->getDataModel();
-        }
+        $collection = $this->repository->getListByPost((int)$post->getPostId());
 
         return [
             'total_count' => $collection->getSize(),
-            'items'       => $items
+            'items'       => $collection->getItems()
         ];
     }
 }

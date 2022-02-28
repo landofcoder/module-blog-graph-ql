@@ -68,7 +68,7 @@ class Tag implements ResolverInterface
             throw new GraphQlInputException(__('"Alias" can\'t be empty.'));
         }
         $collection = $this->collectionFactory->create()
-                        ->addFieldToFilter('alias' , $args['alias']);
+                        ->addFieldToFilter('alias', $args['alias']);
         if (!$collection->getSize()) {
             throw new GraphQlInputException(__('This Tag does not exist.'));
         }

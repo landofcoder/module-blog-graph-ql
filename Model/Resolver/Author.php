@@ -46,7 +46,7 @@ class Author implements ResolverInterface
         if (empty($args['author_id'])) {
             throw new GraphQlInputException(__('Author Id is required.'));
         }
-        $author = $this->authorManagement->get($args['author_id']);
+        $author = $this->authorManagement->get((int)$args['author_id']);
         if (!$author) {
             throw new GraphQlInputException(__('Author Id does not match any Author.'));
         }

@@ -156,5 +156,22 @@ class TagRepository implements TagRepositoryInterface
         $searchResults->setTotalCount($collection->getSize());
         return $searchResults;
     }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getListByPost(
+        int $postId
+    ) {
+        $collection = $this->tagCollectionFactory->create();
+        $collection->addFieldtoFilter("post_id", $postId);
+        $collection->getSelect()->where('alias != ""');
+        $collection->getSelect()->group(
+            'alias'
+        );
+
+        return $collection;
+    }
+
 }
 

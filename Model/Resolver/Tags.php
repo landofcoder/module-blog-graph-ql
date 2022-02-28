@@ -79,8 +79,7 @@ class Tags implements ResolverInterface
                 "name" => $item->getName(),
                 "alias" => $item->getAlias(),
                 "meta_robots" => $item->getMetaRobots(),
-                "total_posts" => $collection->getSize(),
-                "model" => $collection
+                "total_posts" => $collection->getSize()
             ];
             $items[] = $_item;
         }

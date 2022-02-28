@@ -13,23 +13,23 @@ use Magento\Framework\GraphQl\Exception\GraphQlInputException;
 use Magento\Framework\GraphQl\Exception\GraphQlNoSuchEntityException;
 use Magento\Framework\GraphQl\Query\ResolverInterface;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
-use Ves\Blog\Api\PostManagementInterface;
+use Lof\BlogGraphQl\Api\GetPostRepositoryInterface;
 
 class Blog implements ResolverInterface
 {
     /**
-     * @var PostManagementInterface
+     * @var GetPostRepositoryInterface
      */
-    private $postManagement;
+    private $repository;
 
     /**
-     * @var PostManagementInterface $postManagement
+     * @var GetPostRepositoryInterface $repository
      */
     public function __construct(
-        PostManagementInterface $postManagement
+        GetPostRepositoryInterface $repository
     )
     {
-        $this->postManagement = $postManagement;
+        $this->repository = $repository;
     }
 
     /**
@@ -45,10 +45,16 @@ class Blog implements ResolverInterface
         if (empty($args['post_id'])) {
             throw new GraphQlInputException(__('Post Id is required.'));
         }
-        $post = $this->postManagement->get($args['post_id']);
+        $store = $context->getExtensionAttributes()->getStore();
+        $post = $this->repository->get($args['post_id'], $store->getId());
+
         if (!$post || !$post->getIsActive()) {
-            throw new GraphQlInputException(__('Post Id does not match any Post.'));
+            throw new GraphQlNoSuchEntityException(__('Post Id does not match any record.'));
         }
-        return $post;
+
+        $data = $post->getData();
+        $data["model"] = $post;
+
+        return $data;
     }
 }

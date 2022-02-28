@@ -43,8 +43,15 @@ class Categories implements ResolverInterface
         array $value = null,
         array $args = null
     ) {
-        if (!isset($value['post_id']) || empty($value['post_id'])) {
-            throw new GraphQlInputException(__('post_id value must be greater than 0.'));
+        if (!isset($value['model']) || empty($value['model'])) {
+            throw new GraphQlInputException(__('model value must be not empty.'));
+        }
+
+        /** @var \Ves\Blog\Model\Post */
+        $post = $value['model'];
+
+        if (!$post->getId()) {
+            return [];
         }
 
         $store = $context->getExtensionAttributes()->getStore();
