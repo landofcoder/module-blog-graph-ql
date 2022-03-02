@@ -1,4 +1,4 @@
-# Mage2 Module Lof BlogGraphQl
+# Magento Module Lof BlogGraphQl
 
     ``landofcoder/module-blog-graphql``
 
