@@ -59,7 +59,7 @@ class Posts implements ResolverInterface
             throw new GraphQlInputException(__('pageSize value must be greater than 0.'));
         }
 
-        if (!isset($value['user_id']) || empty($value['user_id'])) {
+        if (!$value || !isset($value['user_id']) || empty($value['user_id'])) {
             throw new GraphQlInputException(__('user id value must be not empty.'));
         }
 
@@ -69,9 +69,16 @@ class Posts implements ResolverInterface
 
         $searchResult = $this->repository->getListPostByUser( (int)$value['user_id'], $searchCriteria );
 
+        $items = [];
+        foreach ($searchResult->getItems() as $_item) {
+            $item = $_item->getData();
+            $item["model"] = $_item;
+            $items[] = $item;
+        }
+
         return [
             'total_count' => $searchResult->getTotalCount(),
-            'items'       => $searchResult->getItems(),
+            'items'       => $items
         ];
     }
 }

@@ -68,9 +68,16 @@ class Posts implements ResolverInterface
 
         $searchResult = $this->repository->getListPostByCategory( (int)$value['category_id'], $searchCriteria );
 
+        $items = [];
+        foreach ($searchResult->getItems() as $_item) {
+            $item = $_item->getData();
+            $item["model"] = $_item;
+            $items[] = $item;
+        }
+
         return [
             'total_count' => $searchResult->getTotalCount(),
-            'items'       => $searchResult->getItems(),
+            'items'       => $items,
         ];
     }
 }

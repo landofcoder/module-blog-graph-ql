@@ -58,6 +58,7 @@ class Blogs implements ResolverInterface
         if ($args['pageSize'] < 1) {
             throw new GraphQlInputException(__('pageSize value must be greater than 0.'));
         }
+
         $searchCriteria = $this->searchCriteriaBuilder->build( 'ves_blog_post', $args );
         $searchCriteria->setCurrentPage( $args['currentPage'] );
         $searchCriteria->setPageSize( $args['pageSize'] );
@@ -66,9 +67,11 @@ class Blogs implements ResolverInterface
 
         $items = [];
         foreach ($searchResult->getItems() as $_item) {
-            $_item["model"] = $_item;
-            $items[] = $_item;
+            $item = $_item->getData();
+            $item["model"] = $_item;
+            $items[] = $item;
         }
+
         return [
             'total_count' => $searchResult->getTotalCount(),
             'items'       => $items

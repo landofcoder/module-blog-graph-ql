@@ -218,7 +218,7 @@ class BlogRepository implements BlogRepositoryInterface
         }
 
         if ($categoryId) {
-            $collection->addCategoryFilter("category_id", (int)$categoryId);
+            $collection->addCategoryFilter((int)$categoryId);
         }
 
         $searchResults = $this->searchResultsFactory->create();

@@ -47,8 +47,8 @@ class Category implements ResolverInterface
         }
         $store = $context->getExtensionAttributes()->getStore();
         $category = $this->categoryRepository->view($args['category_id'], $store->getId());
-        if (!$category || !$category->getIsActive()) {
-            throw new GraphQlInputException(__('Category Id does not match any Author.'));
+        if (!$category || (isset($category["is_active"]) && !$category["is_active"])) {
+            throw new GraphQlInputException(__('Category Id does not match any records.'));
         }
         return $category;
     }
