@@ -17,13 +17,14 @@ use Ves\Blog\Api\CategoryRepositoryInterface;
 
 class Category implements ResolverInterface
 {
-
-
     /**
      * @var CategoryRepositoryInterface
      */
     private $categoryRepository;
 
+    /**
+     * @param CategoryRepositoryInterface $categoryRepository
+     */
     public function __construct(
         CategoryRepositoryInterface $categoryRepository
     )
@@ -41,9 +42,14 @@ class Category implements ResolverInterface
         array $value = null,
         array $args = null
     ) {
-        if (!$this->categoryRepository->get($args['category_id'])) {
-            throw new GraphQlInputException(__('Category Id does not match any Author.'));
+        if (empty($args['category_id'])) {
+            throw new GraphQlInputException(__('Category Id is required.'));
         }
-        return $this->categoryRepository->get($args['category_id']);
+        $store = $context->getExtensionAttributes()->getStore();
+        $category = $this->categoryRepository->view($args['category_id'], $store->getId());
+        if (!$category || (isset($category["is_active"]) && !$category["is_active"])) {
+            throw new GraphQlInputException(__('Category Id does not match any records.'));
+        }
+        return $category;
     }
 }

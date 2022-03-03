@@ -48,11 +48,11 @@ class ArchiveBlogs implements ResolverInterface
     ) {
         $times = [];
         $months = [];
-        foreach($this->_postCollection as $post) {
+        foreach ($this->_postCollection as $post) {
             $time = strtotime($post->getData('creation_time'));
-            if(isset($months[date('Y-m', $time)]['count'])){
+            if (isset($months[date('Y-m', $time)]['count'])) {
                 $months[date('Y-m', $time)]['count'] =  (int)$months[date('Y-m', $time)]['count']+1;
-            }else{
+            } else {
                 $months[date('Y-m', $time)]['count'] = 1;
             }
             $months[date('Y-m', $time)]['time'] = $time;

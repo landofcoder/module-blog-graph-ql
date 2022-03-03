@@ -23,6 +23,7 @@ use Magento\Framework\Reflection\DataObjectProcessor;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\Catalog\Model\ResourceModel\Product\CollectionFactory;
 use Magento\Catalog\Api\ProductRepositoryInterface;
+
 /**
  * Class CommentRepository
  * @package Lof\BlogGraphQl\Model
@@ -142,7 +143,6 @@ class CommentRepository implements CommentRepositoryInterface
         $this->productCollection = $productCollection;
         $this->productRepository = $productRepository;
         $this->post = $post;
-
     }
 
     /**
@@ -151,15 +151,41 @@ class CommentRepository implements CommentRepositoryInterface
     public function getListComment(
         \Magento\Framework\Api\SearchCriteriaInterface $criteria
     ) {
+        return $this->getCommentsCollection($criteria);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPostComments(
+        int $post_id,
+        \Magento\Framework\Api\SearchCriteriaInterface $criteria
+    ) {
+        return $this->getCommentsCollection($criteria, $post_id);
+    }
+
+    /**
+     * @param SearchCriteriaInterface $searchCriteria
+     * @param int $post_id
+     * @return mixed
+     */
+    public function getCommentsCollection($criteria, int $post_id = 0)
+    {
         $collection = $this->commentCollectionFactory->create();
 
         $this->collectionProcessor->process($criteria, $collection);
+
+        $collection->addFieldToFilter("is_active", 1);
+
+        if ($post_id) {
+            $collection->addFieldToFilter("post_id", (int)$post_id);
+        }
 
         $searchResults = $this->searchResultsFactory->create();
         $searchResults->setSearchCriteria($criteria);
 
         $items = [];
-        foreach ($collection as $key => $model) {
+        foreach ($collection->getItems() as $key => $model) {
             $model->load($model->getCommentId());
             $post = $this->getPost($model->getPostId());
             $items[$key] = $model->getData();

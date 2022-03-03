@@ -28,6 +28,10 @@ class Categories implements ResolverInterface
      */
     private $categoryRepository;
 
+    /**
+     * @param CategoryRepositoryInterface $categoryRepository
+     * @param SearchCriteriaBuilder $searchCriteriaBuilder
+     */
     public function __construct(
         CategoryRepositoryInterface $categoryRepository,
         SearchCriteriaBuilder $searchCriteriaBuilder
@@ -56,8 +60,7 @@ class Categories implements ResolverInterface
         $searchCriteria = $this->searchCriteriaBuilder->build( 'ves_blog_category', $args );
         $searchCriteria->setCurrentPage( $args['currentPage'] );
         $searchCriteria->setPageSize( $args['pageSize'] );
-
-        $searchResult = $this->categoryRepository->getList( $searchCriteria );
+        $searchResult = $this->categoryRepository->getPublishList( $searchCriteria );
 
         return [
             'total_count' => $searchResult->getTotalCount(),

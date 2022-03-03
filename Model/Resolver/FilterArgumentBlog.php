@@ -33,7 +33,7 @@ class FilterArgumentBlog implements FieldEntityAttributesInterface
     {
         $fields = [];
         /** @var Field $field */
-        foreach ($this->config->getConfigElement('Blog')->getFields() as $field) {
+        foreach ($this->config->getConfigElement('BlogPostFilterInput')->getFields() as $field) {
             $fields[$field->getName()] = [
                 'type' => 'String',
                 'fieldName' => $field->getName(),

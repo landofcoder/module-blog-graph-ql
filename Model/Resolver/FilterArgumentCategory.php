@@ -33,7 +33,7 @@ class FilterArgumentCategory implements FieldEntityAttributesInterface
     {
         $fields = [];
         /** @var Field $field */
-        foreach ($this->config->getConfigElement('Category')->getFields() as $field) {
+        foreach ($this->config->getConfigElement('BlogCategoryFilterInput')->getFields() as $field) {
             $fields[$field->getName()] = [
                 'type' => 'String',
                 'fieldName' => $field->getName(),

@@ -23,18 +23,23 @@ class Blogs implements ResolverInterface
      * @var SearchCriteriaBuilder
      */
     private $searchCriteriaBuilder;
+
     /**
      * @var BlogRepositoryInterface
      */
-    private $postManagement;
+    private $repository;
 
+    /**
+     * @param BlogRepositoryInterface $repository
+     * @param SearchCriteriaBuilder $searchCriteriaBuilder
+     */
     public function __construct(
-        BlogRepositoryInterface $postManagement,
+        BlogRepositoryInterface $repository,
         SearchCriteriaBuilder $searchCriteriaBuilder
     )
     {
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
-        $this->postManagement = $postManagement;
+        $this->repository = $repository;
     }
 
     /**
@@ -53,15 +58,23 @@ class Blogs implements ResolverInterface
         if ($args['pageSize'] < 1) {
             throw new GraphQlInputException(__('pageSize value must be greater than 0.'));
         }
+
         $searchCriteria = $this->searchCriteriaBuilder->build( 'ves_blog_post', $args );
         $searchCriteria->setCurrentPage( $args['currentPage'] );
         $searchCriteria->setPageSize( $args['pageSize'] );
 
-        $searchResult = $this->postManagement->getListPost( $searchCriteria );
+        $searchResult = $this->repository->getListPost( $searchCriteria );
+
+        $items = [];
+        foreach ($searchResult->getItems() as $_item) {
+            $item = $_item->getData();
+            $item["model"] = $_item;
+            $items[] = $item;
+        }
 
         return [
             'total_count' => $searchResult->getTotalCount(),
-            'items'       => $searchResult->getItems(),
+            'items'       => $items
         ];
     }
 }

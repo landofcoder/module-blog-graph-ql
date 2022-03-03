@@ -158,35 +158,105 @@ class BlogRepository implements BlogRepositoryInterface
     public function getListPost(
         \Magento\Framework\Api\SearchCriteriaInterface $criteria
     ) {
+        return $this->getFilterCollection($criteria);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getListPostByTag(
+        string $tag,
+        \Magento\Framework\Api\SearchCriteriaInterface $criteria
+    ) {
+        return $this->getFilterCollection($criteria, $tag);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getListPostByUser(
+        int $userId,
+        \Magento\Framework\Api\SearchCriteriaInterface $criteria
+    ) {
+        return $this->getFilterCollection($criteria, null, $userId);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getListPostByCategory(
+        int $categoryId,
+        \Magento\Framework\Api\SearchCriteriaInterface $criteria
+    ) {
+        return $this->getFilterCollection($criteria, null, null, $categoryId);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getFilterCollection(
+        \Magento\Framework\Api\SearchCriteriaInterface $criteria,
+        string $tag = null,
+        int $userId = null,
+        int $categoryId = null
+    ) {
         $collection = $this->postCollectionFactory->create();
 
+        $this->extensionAttributesJoinProcessor->process(
+            $collection,
+            \Ves\Blog\Api\Data\PostInterface::class
+        );
+
         $this->collectionProcessor->process($criteria, $collection);
+
+        if ($tag) {
+            $collection = $this->addFilterTag($tag, $collection);
+        }
+
+        if ($userId) {
+            $collection->addFieldToFilter("user_id", (int)$userId);
+        }
+
+        if ($categoryId) {
+            $collection->addCategoryFilter((int)$categoryId);
+        }
 
         $searchResults = $this->searchResultsFactory->create();
         $searchResults->setSearchCriteria($criteria);
 
         $items = [];
         foreach ($collection as $key => $model) {
-            $model->load($model->getPostId());
-            $items[$key] = $model->getData();
-            $author = $this->helper->getPostAuthor($model);
-
-            if ($author) {
-                $avatar = $this->getBaseUrl()."media/".$author->getAvatar();
-                $author->setAvatar($avatar);
-                $items[$key] ['author'] = $author->getData();
-            }
-            $related = $model->getRelated();
-            $items[$key]['related_products'] = $related['related_products'];
-            $items[$key]['related_posts'] = $related['related_posts'];
-
-            $items[$key] ['image'] = $model->getImageUrl();
-            $items[$key] ['thumbnail'] = $model->getThumbnailUrl();
+            $_item = $model->getDataModel();
+            $_item->setImage($model->getImageUrl());
+            $_item->setThumbnail($model->getThumbnailUrl());
+            $items[] = $_item;
         }
 
         $searchResults->setItems($items);
         $searchResults->setTotalCount($collection->getSize());
         return $searchResults;
+    }
+
+    /**
+     * join and filter tag
+     *
+     * @param string $tag
+     * @param \Ves\Blog\Model\ResourceModel\Post\Collection
+     * @return \Ves\Blog\Model\ResourceModel\Post\Collection
+     */
+    public function addFilterTag(string $tag, $collection)
+    {
+        $collection->getSelect()
+                    ->join(
+                        ['post_tag_table' => $collection->getResource()->getTable("ves_blog_post_tag")],
+                        'main_table.post_id = post_tag_table.post_id',
+                        []
+                    )
+                    ->where("post_tag_table.alias = ?", $tag)
+                    ->group(
+                        'main_table.post_id'
+                    );
+        return $collection;
     }
 
     /**

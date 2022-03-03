@@ -5,17 +5,24 @@
  */
 declare(strict_types=1);
 
-namespace Lof\BlogGraphQl\Model\Resolver;
+namespace Lof\BlogGraphQl\Model\Resolver\Post;
 
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\GraphQl\Config\Element\Field;
 use Magento\Framework\GraphQl\Exception\GraphQlInputException;
+use Magento\Framework\GraphQl\Exception\GraphQlNoSuchEntityException;
 use Magento\Framework\GraphQl\Query\ResolverInterface;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
-use Lof\BlogGraphQl\Api\CommentRepositoryInterface;
 use Magento\Framework\GraphQl\Query\Resolver\Argument\SearchCriteria\Builder as SearchCriteriaBuilder;
+use Lof\BlogGraphQl\Api\CommentRepositoryInterface;
 
 class Comments implements ResolverInterface
 {
+
+    /**
+     * @var CommentRepositoryInterface
+     */
+    protected $repository;
 
     /**
      * @var SearchCriteriaBuilder
@@ -23,21 +30,16 @@ class Comments implements ResolverInterface
     private $searchCriteriaBuilder;
 
     /**
-     * @var CommentRepositoryInterface
-     */
-    private $commentManagement;
-
-    /**
-     * @var CommentRepositoryInterface $commentManagement
-     * @var SearchCriteriaBuilder $searchCriteriaBuilder
+     * @param CommentRepositoryInterface $repository
+     * @param SearchCriteriaBuilder $searchCriteriaBuilder
      */
     public function __construct(
-        CommentRepositoryInterface $commentManagement,
+        CommentRepositoryInterface $repository,
         SearchCriteriaBuilder $searchCriteriaBuilder
     )
     {
+        $this->repository = $repository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
-        $this->commentManagement = $commentManagement;
     }
 
     /**
@@ -56,11 +58,23 @@ class Comments implements ResolverInterface
         if ($args['pageSize'] < 1) {
             throw new GraphQlInputException(__('pageSize value must be greater than 0.'));
         }
+
+        if (!isset($value['model']) || empty($value['model'])) {
+            throw new GraphQlInputException(__('model value must be not empty.'));
+        }
+
+        /** @var \Ves\Blog\Model\Post */
+        $post = $value['model'];
+
+        if (!$post->getId()) {
+            return [];
+        }
+
         $searchCriteria = $this->searchCriteriaBuilder->build( 'ves_blog_comment', $args );
         $searchCriteria->setCurrentPage( $args['currentPage'] );
         $searchCriteria->setPageSize( $args['pageSize'] );
 
-        $searchResult = $this->commentManagement->getListComment( $searchCriteria );
+        $searchResult = $this->repository->getPostComments((int)$post->getId(), $searchCriteria );
 
         return [
             'total_count' => $searchResult->getTotalCount(),

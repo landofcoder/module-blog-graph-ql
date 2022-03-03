@@ -5,16 +5,18 @@
  */
 declare(strict_types=1);
 
-namespace Lof\BlogGraphQl\Model\Resolver;
+namespace Lof\BlogGraphQl\Model\Resolver\Author;
 
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\GraphQl\Config\Element\Field;
 use Magento\Framework\GraphQl\Exception\GraphQlInputException;
+use Magento\Framework\GraphQl\Exception\GraphQlNoSuchEntityException;
 use Magento\Framework\GraphQl\Query\ResolverInterface;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
-use Lof\BlogGraphQl\Api\CommentRepositoryInterface;
+use Lof\BlogGraphQl\Api\BlogRepositoryInterface;
 use Magento\Framework\GraphQl\Query\Resolver\Argument\SearchCriteria\Builder as SearchCriteriaBuilder;
 
-class Comments implements ResolverInterface
+class Posts implements ResolverInterface
 {
 
     /**
@@ -23,21 +25,21 @@ class Comments implements ResolverInterface
     private $searchCriteriaBuilder;
 
     /**
-     * @var CommentRepositoryInterface
+     * @var BlogRepositoryInterface
      */
-    private $commentManagement;
+    private $repository;
 
     /**
-     * @var CommentRepositoryInterface $commentManagement
-     * @var SearchCriteriaBuilder $searchCriteriaBuilder
+     * @param BlogRepositoryInterface $repository
+     * @param SearchCriteriaBuilder $searchCriteriaBuilder
      */
     public function __construct(
-        CommentRepositoryInterface $commentManagement,
+        BlogRepositoryInterface $repository,
         SearchCriteriaBuilder $searchCriteriaBuilder
     )
     {
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
-        $this->commentManagement = $commentManagement;
+        $this->repository = $repository;
     }
 
     /**
@@ -56,15 +58,27 @@ class Comments implements ResolverInterface
         if ($args['pageSize'] < 1) {
             throw new GraphQlInputException(__('pageSize value must be greater than 0.'));
         }
-        $searchCriteria = $this->searchCriteriaBuilder->build( 'ves_blog_comment', $args );
+
+        if (!$value || !isset($value['user_id']) || empty($value['user_id'])) {
+            throw new GraphQlInputException(__('user id value must be not empty.'));
+        }
+
+        $searchCriteria = $this->searchCriteriaBuilder->build( 'ves_blog_post', $args );
         $searchCriteria->setCurrentPage( $args['currentPage'] );
         $searchCriteria->setPageSize( $args['pageSize'] );
 
-        $searchResult = $this->commentManagement->getListComment( $searchCriteria );
+        $searchResult = $this->repository->getListPostByUser( (int)$value['user_id'], $searchCriteria );
+
+        $items = [];
+        foreach ($searchResult->getItems() as $_item) {
+            $item = $_item->getData();
+            $item["model"] = $_item;
+            $items[] = $item;
+        }
 
         return [
             'total_count' => $searchResult->getTotalCount(),
-            'items'       => $searchResult->getItems(),
+            'items'       => $items
         ];
     }
 }

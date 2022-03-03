@@ -23,11 +23,16 @@ class Authors implements ResolverInterface
      * @var SearchCriteriaBuilder
      */
     private $searchCriteriaBuilder;
+
     /**
      * @var AuthorRepositoryInterface
      */
     private $authorManagement;
 
+    /**
+     * @var AuthorRepositoryInterface $authorManagement
+     * @var SearchCriteriaBuilder $searchCriteriaBuilder
+     */
     public function __construct(
         AuthorRepositoryInterface $authorManagement,
         SearchCriteriaBuilder $searchCriteriaBuilder

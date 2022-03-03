@@ -13,7 +13,8 @@ use Magento\Framework\GraphQl\Exception\GraphQlInputException;
 use Magento\Framework\GraphQl\Exception\GraphQlNoSuchEntityException;
 use Magento\Framework\GraphQl\Query\ResolverInterface;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
-use Ves\Blog\Api\TagRepositoryInterface;
+use Lof\BlogGraphQl\Api\TagRepositoryInterface;
+use Ves\Blog\Model\ResourceModel\Tag\CollectionFactory;
 use Magento\Framework\GraphQl\Query\Resolver\Argument\SearchCriteria\Builder as SearchCriteriaBuilder;
 
 class Tags implements ResolverInterface
@@ -23,18 +24,31 @@ class Tags implements ResolverInterface
      * @var SearchCriteriaBuilder
      */
     private $searchCriteriaBuilder;
+
     /**
      * @var TagRepositoryInterface
      */
-    private $tagManagement;
+    private $repository;
 
+    /**
+     * @var CollectionFactory
+     */
+    private $collectionFactory;
+
+    /**
+     * @var TagRepositoryInterface $repository
+     * @var SearchCriteriaBuilder $searchCriteriaBuilder
+     * @var CollectionFactory $collectionFactory
+     */
     public function __construct(
-        TagRepositoryInterface $tagManagement,
-        SearchCriteriaBuilder $searchCriteriaBuilder
+        TagRepositoryInterface $repository,
+        SearchCriteriaBuilder $searchCriteriaBuilder,
+        CollectionFactory $collectionFactory
     )
     {
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
-        $this->tagManagement = $tagManagement;
+        $this->repository = $repository;
+        $this->collectionFactory = $collectionFactory;
     }
 
     /**
@@ -57,11 +71,21 @@ class Tags implements ResolverInterface
         $searchCriteria->setCurrentPage( $args['currentPage'] );
         $searchCriteria->setPageSize( $args['pageSize'] );
 
-        $searchResult = $this->tagManagement->getList( $searchCriteria );
-
+        $searchResult = $this->repository->getList( $searchCriteria );
+        $items = [];
+        foreach ($searchResult->getItems() as $item) {
+            $collection = $this->collectionFactory->create()->addFieldToFilter('alias' , $item->getAlias());
+            $_item = [
+                "name" => $item->getName(),
+                "alias" => $item->getAlias(),
+                "meta_robots" => $item->getMetaRobots(),
+                "total_posts" => $collection->getSize()
+            ];
+            $items[] = $_item;
+        }
         return [
             'total_count' => $searchResult->getTotalCount(),
-            'items'       => $searchResult->getItems(),
+            'items'       => $items
         ];
     }
 }

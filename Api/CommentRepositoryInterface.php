@@ -15,14 +15,22 @@ use Magento\Framework\Api\SearchCriteriaInterface;
  */
 interface CommentRepositoryInterface
 {
-
-
     /**
      * @param SearchCriteriaInterface $searchCriteria
      * @return mixed
      */
     public function getListComment(
-        \Magento\Framework\Api\SearchCriteriaInterface $searchCriteria
+        SearchCriteriaInterface $searchCriteria
+    );
+
+    /**
+     * @param int $post_id
+     * @param SearchCriteriaInterface $searchCriteria
+     * @return mixed
+     */
+    public function getPostComments(
+        int $post_id,
+        SearchCriteriaInterface $searchCriteria
     );
 
 }

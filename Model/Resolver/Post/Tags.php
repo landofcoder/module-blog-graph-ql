@@ -5,7 +5,7 @@
  */
 declare(strict_types=1);
 
-namespace Lof\BlogGraphQl\Model\Resolver;
+namespace Lof\BlogGraphQl\Model\Resolver\Post;
 
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\GraphQl\Config\Element\Field;
@@ -13,20 +13,21 @@ use Magento\Framework\GraphQl\Exception\GraphQlInputException;
 use Magento\Framework\GraphQl\Exception\GraphQlNoSuchEntityException;
 use Magento\Framework\GraphQl\Query\ResolverInterface;
 use Magento\Framework\GraphQl\Schema\Type\ResolveInfo;
-use Lof\BlogGraphQl\Api\GetPostRepositoryInterface;
+use Lof\BlogGraphQl\Api\TagRepositoryInterface;
 
-class Blog implements ResolverInterface
+class Tags implements ResolverInterface
 {
-    /**
-     * @var GetPostRepositoryInterface
-     */
-    private $repository;
 
     /**
-     * @var GetPostRepositoryInterface $repository
+     * @var TagRepositoryInterface
+     */
+    protected $repository;
+
+    /**
+     * @param TagRepositoryInterface $repository
      */
     public function __construct(
-        GetPostRepositoryInterface $repository
+        TagRepositoryInterface $repository
     )
     {
         $this->repository = $repository;
@@ -42,19 +43,21 @@ class Blog implements ResolverInterface
         array $value = null,
         array $args = null
     ) {
-        if (empty($args['post_id'])) {
-            throw new GraphQlInputException(__('Post Id is required.'));
-        }
-        $store = $context->getExtensionAttributes()->getStore();
-        $post = $this->repository->get($args['post_id'], $store->getId());
-
-        if (!$post || !$post->getIsActive()) {
-            throw new GraphQlNoSuchEntityException(__('Post Id does not match any record.'));
+        if (!isset($value['model']) || empty($value['model'])) {
+            throw new GraphQlInputException(__('model value must be not empty.'));
         }
 
-        $data = $post->getData();
-        $data["model"] = $post;
+        /** @var \Ves\Blog\Model\Post */
+        $post = $value['model'];
 
-        return $data;
+        if (!$post->getPostId()) {
+            return [];
+        }
+        $collection = $this->repository->getListByPost((int)$post->getPostId());
+
+        return [
+            'total_count' => $collection->getSize(),
+            'items'       => $collection->getItems()
+        ];
     }
 }
