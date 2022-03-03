@@ -154,7 +154,7 @@ type BlogAuthor {
         sort: BlogSortInput @doc(description: "Identifies which blog attributes to sort.")
         pageSize: Int = 20 @doc(description: "Specifies the maximum number of results to return at once. This attribute is optional.")
         currentPage: Int = 1 @doc(description: "Specifies which page of results to return. The default value is 1.")
-    ) : BlogPosts @resolver(class: "\\Lof\\BlogGraphQl\\Model\\Resolver\\Category\\Posts") @doc(description: "The blog posts query searches for blog posts that match the current author")
+    ) : BlogPosts @resolver(class: "\\Lof\\BlogGraphQl\\Model\\Resolver\\Author\\Posts") @doc(description: "The blog posts query searches for blog posts that match the current author")
 }
 
 type BlogCategory {

@@ -12,6 +12,7 @@ use Magento\Store\Model\StoreManagerInterface;
 use Lof\BlogGraphQl\Api\GetPostRepositoryInterface;
 use Ves\Blog\Helper\Data;
 use Ves\Blog\Model\PostFactory;
+use Ves\Blog\Model\ResourceModel\Post as ResourcePost;
 
 /**
  * get Post repository model
@@ -35,20 +36,28 @@ class GetPostRepository implements GetPostRepositoryInterface
     private $storeManager;
 
     /**
+     * @var ResourcePost
+     */
+    private $resource;
+
+    /**
      * Initialize dependencies.
      *
      * @param Data $data
      * @param StoreManagerInterface $storeManager
      * @param PostFactory $postFactory
+     * @param ResourcePost $resource
      */
     public function __construct(
         Data $data,
         StoreManagerInterface $storeManager,
-        PostFactory $postFactory
+        PostFactory $postFactory,
+        ResourcePost $resource
     ) {
         $this->helper = $data;
         $this->storeManager = $storeManager;
         $this->postFactory = $postFactory;
+        $this->resource = $resource;
     }
 
     /**
@@ -58,7 +67,7 @@ class GetPostRepository implements GetPostRepositoryInterface
     {
         try {
             $item = $this->postFactory->create();
-            $item->load($id);
+            $this->resource->load($item, (int)$id);
 
             if (!$item->getId()) {
                 return false;
