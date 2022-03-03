@@ -1,4 +1,4 @@
-# Magento 2 Module Lof BlogGraphQl
+# Magento Module Lof BlogGraphQl
 
     ``landofcoder/module-blog-graphql``
 
@@ -38,88 +38,7 @@ magento 2 blog graphql extension for extension [Ves_Blog](https://landofcoder.co
 ## Configuration
 
 
-## Queries
 
-1. Query get Blog Archives List
 
-```
-{
-  blogArchive {
-	time
-    count 
-  }
-}
-```
 
-2. Query get Blog Posts List
 
-```
-{
-  blogPosts(
-    filter: {}
-    sort: {
-      creation_time: DESC
-    }
-    pageSize: 10
-    currentPage: 1
-  ) {
-    total_count
-    items {
-      post_id
-      title
-      identifier
-      short_content
-      image
-      image_type
-      image_video_type
-      image_video_id
-      thumbnail
-      thumbnail_type
-      thumbnail_video_type
-      thumbnail_video_id
-      hits
-      creation_time
-      update_time
-      like
-      real_image_url
-      real_thumbnail_url
-      comment_count
-      tags {
-        total_count
-        items {
-          name
-          alias
-        }
-      }
-      categories {
-        total_count
-        items {
-          category_id
-          name
-          identifier
-        }
-      }
-    }
-  }
-}
-```
-
-3. Query get Blog Post Detail
-
-```
-{
-    blogPost(post_id: 1)
-}
-```
-
-. Blog Config
-
-```
-{
-  storeConfig {
-    Blog {
-      general_settings_enable
-    }
-  }
-}
-```
